@@ -98,7 +98,30 @@ export default function SettingScreen(props) {
     const pos = event.nativeEvent.contentOffset.y;
     setScrolling(pos);
   }
-  
+
+  const renderers = {
+    img: (htmlAttribs, children, convertedCSSStyles, passProps) => {
+      let imgWidth = htmlAttribs.width;
+      let imgHeight = htmlAttribs.height;
+
+      if(htmlAttribs.width > contentWidth - 40) {
+        imgWidth = contentWidth - 40;
+        imgHeight = (contentWidth - 40) * htmlAttribs.height / htmlAttribs.width;
+      }
+      
+      return (<Image source={{uri: htmlAttribs.src, width: imgWidth, height: imgHeight}}/>)
+    },
+    figure: (htmlAttribs, children, convertedCSSStyles, passProps) => {
+      return (
+        <View>{children}</View>
+      )
+      
+    },
+    figcaption: (htmlAttribs, children, convertedCSSStyles, passProps) => (
+      <Text style={{ color: "aaa"}}>{children}</Text>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView onScroll={handleScroll}>
@@ -133,8 +156,7 @@ export default function SettingScreen(props) {
           !!news?.title && 
           <View style={styles.textContainer}>
             <Text style={styles.title}>{news?.title}</Text>
-
-          
+            
             <View style={styles.dateContainer}>
               <Text style={styles.date}>{news?.date}</Text>
               <TouchableOpacity  style={styles.fontContainer} onPress={() => setFontControl(true)}>
@@ -154,6 +176,7 @@ export default function SettingScreen(props) {
                     baseFontStyle={{ fontFamily: "Roboto" }}
                     ignoredStyles={["font-family", "letter-spacing"]}
                     contentWidth={contentWidth - 40}
+                    renderers={renderers}
                     tagsStyles={{ p: { marginTop: 5, marginBottom: 5, fontSize, lineHeight: 20 }, iframe: {}, blockquote: { backgroundColor: "#f1f1f1", padding: 12, paddingBottom: 0, marginTop: 6 } }}/>
             }
           </View>
@@ -186,7 +209,7 @@ export default function SettingScreen(props) {
             !news?.yorumlar &&
             <View style={{padding: 20}}>
               <Text>Bu habere ilk yorumu sen yap...</Text>
-              </View>
+            </View>
           }
 
           {
@@ -206,6 +229,7 @@ export default function SettingScreen(props) {
                       staticContentMaxWidth={contentWidth - 40}
                       imagesMaxWidth={contentWidth - 40}
                       debug = {true}
+                      renderers={renderers}
                       tagsStyles={{ p: { marginTop: 5, marginBottom: 5, fontSize, lineHeight: 20, display: 'none', color: 'red' }, figure: {display: 'none'}, figcaption: {display: 'none'},  iframe: {display: 'none'}, blockquote: { backgroundColor: "#f1f1f1", padding: 12, paddingBottom: 0, marginTop: 6 } }}/>
 
                 <View style={styles.yorumBegeni}>
